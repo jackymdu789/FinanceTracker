@@ -18,23 +18,23 @@ import jakarta.persistence.ManyToMany;
 public class UserDetails {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Integer userId;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String userId;
 	String userName;
 	String dob;
 	String age;
 	BigDecimal salary;
 	@ManyToMany
-	@JoinTable(name = "userRelationshipToOtherUser", 
+	@JoinTable(name = "userRelationshipTable", 
 					joinColumns = @JoinColumn(name = "userId"),
-					inverseJoinColumns = @JoinColumn(name = "accountId"))
+					inverseJoinColumns = @JoinColumn(name = "otherUserId"))
 	List<UserDetails> listOfRelationAccount = new ArrayList<>();
 	
-	public Integer getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(Integer userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
@@ -78,11 +78,15 @@ public class UserDetails {
 		this.listOfRelationAccount = listOfRelationAccount;
 	}
 
-	public UserDetails(Integer userId) {
+	public UserDetails(String userId) {
 		this(userId, null, null, null, null, null);
 	}
+	
+	public UserDetails(String userId, List<UserDetails> userIds) {
+		this(userId, null, null, null, null, userIds);
+	}
 
-	public UserDetails(Integer userId, String userName, String dob, String age, BigDecimal salary,
+	public UserDetails(String userId, String userName, String dob, String age, BigDecimal salary,
 			List<UserDetails> listOfRelationAccount) {
 		super();
 		this.userId = userId;
@@ -91,6 +95,8 @@ public class UserDetails {
 		this.age = age;
 		this.salary = salary;
 		this.listOfRelationAccount = listOfRelationAccount;
+	}
+	UserDetails() {
 	}
 
 }

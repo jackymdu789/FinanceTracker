@@ -14,24 +14,24 @@ import jakarta.persistence.ManyToOne;
 public class Account {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	Integer accountId;
+	@GeneratedValue(strategy = GenerationType.UUID)
+	String accountId;
 	@ManyToOne
 	UserDetails userDetails;
 	BigDecimal balance;
 	BigDecimal savingAmount;
 	Integer goalScore;
 	
-	public Integer getAccountId() {
+	public String getAccountId() {
 		return accountId;
 	}
-	public void setAccountId(Integer accountId) {
+	public void setAccountId(String accountId) {
 		this.accountId = accountId;
 	}
 	public UserDetails getUserDetails() {
 		return userDetails;
 	}
-	public void setUserDetails(Integer userId) {
+	public void setUserDetails(String userId) {
 		this.userDetails = new UserDetails(userId);
 	}
 	public BigDecimal getBalance() {
@@ -52,7 +52,7 @@ public class Account {
 	public void setGoalScore(Integer goalScore) {
 		this.goalScore = goalScore;
 	}
-	public Account(Integer accountId, Integer userId, BigDecimal balance, BigDecimal savingAmount,
+	public Account(String accountId, String userId, BigDecimal balance, BigDecimal savingAmount,
 			Integer goalScore) {
 		super();
 		this.accountId = accountId;

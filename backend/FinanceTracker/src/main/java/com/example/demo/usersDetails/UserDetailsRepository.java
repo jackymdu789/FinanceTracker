@@ -1,7 +1,9 @@
 package com.example.demo.usersDetails;
 
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;
 
-public interface UserDetailsRepository extends CrudRepository<UserDetails, Integer> {
-
+@Repository
+public interface UserDetailsRepository extends CrudRepository<UserDetails, String> {
+	
 }
