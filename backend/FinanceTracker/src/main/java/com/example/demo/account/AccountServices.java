@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 public class AccountServices {
 	
 	@Autowired
-	AccountRespository respo;
+	AccountRepository respo;
 	
 	Iterable<Account> getAllAccountDetails() {
 		return respo.findAll();
