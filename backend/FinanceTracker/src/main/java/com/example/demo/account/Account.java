@@ -4,22 +4,30 @@ import java.math.BigDecimal;
 
 import com.example.demo.usersDetails.UserDetails;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
+@Table(name="Account")
 public class Account {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String accountId;
 	@ManyToOne
+	@JoinColumn(name="userId", nullable=false)
 	UserDetails userDetails;
+	@Column(nullable=false)
 	BigDecimal balance;
+	@Column(nullable=false)
 	BigDecimal savingAmount;
+	@Column(nullable=false)
 	Integer goalScore;
 	
 	public String getAccountId() {
@@ -61,7 +69,7 @@ public class Account {
 		this.savingAmount = savingAmount;
 		this.goalScore = goalScore;
 	}
-	public Account(String accountId2) {
+	public Account(String accountId) {
 		this.accountId = accountId;
 	}
 

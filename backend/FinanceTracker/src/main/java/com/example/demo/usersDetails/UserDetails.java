@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.example.demo.account.Account;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,14 +21,18 @@ public class UserDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String userId;
+	@Column(nullable=false)
 	String userName;
+	@Column(nullable=false)
 	String dob;
+	@Column(nullable=false)
 	String age;
+	@Column(nullable=false)
 	BigDecimal salary;
 	@ManyToMany
 	@JoinTable(name = "userRelationshipTable", 
 					joinColumns = @JoinColumn(name = "userId"),
-					inverseJoinColumns = @JoinColumn(name = "otherUserId"))
+					inverseJoinColumns = @JoinColumn(name = "otherUserId", nullable=false))
 	List<UserDetails> listOfRelationAccount = new ArrayList<>();
 	
 	public String getUserId() {
