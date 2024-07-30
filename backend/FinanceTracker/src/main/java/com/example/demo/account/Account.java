@@ -64,5 +64,9 @@ public class Account {
 		this.savingAmount = savingAmount;
 		this.goalScore = goalScore;
 	}
+	
+	public Account(String accountId) {
+		this(accountId, null, null, null, null);
+	}
 
 }
