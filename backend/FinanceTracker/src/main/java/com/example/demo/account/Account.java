@@ -22,6 +22,9 @@ public class Account {
 	BigDecimal savingAmount;
 	Integer goalScore;
 	
+	public Account() {
+	}
+	
 	public String getAccountId() {
 		return accountId;
 	}
@@ -60,6 +63,10 @@ public class Account {
 		this.balance = balance;
 		this.savingAmount = savingAmount;
 		this.goalScore = goalScore;
+	}
+	
+	public Account(String accountId) {
+		this(accountId, null, null, null, null);
 	}
 
 }

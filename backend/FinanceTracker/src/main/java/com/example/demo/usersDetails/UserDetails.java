@@ -26,8 +26,8 @@ public class UserDetails {
 	BigDecimal salary;
 	@ManyToMany
 	@JoinTable(name = "userRelationshipTable", 
-					joinColumns = @JoinColumn(name = "userId"),
-					inverseJoinColumns = @JoinColumn(name = "otherUserId"))
+					joinColumns = @JoinColumn(name = "userId"), // current table 
+					inverseJoinColumns = @JoinColumn(name = "otherUserId")) // other table
 	List<UserDetails> listOfRelationAccount = new ArrayList<>();
 	
 	public String getUserId() {
