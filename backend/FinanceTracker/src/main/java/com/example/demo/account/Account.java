@@ -22,6 +22,9 @@ public class Account {
 	BigDecimal savingAmount;
 	Integer goalScore;
 	
+	public Account() {
+	}
+	
 	public String getAccountId() {
 		return accountId;
 	}

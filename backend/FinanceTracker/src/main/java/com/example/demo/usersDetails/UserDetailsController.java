@@ -1,6 +1,5 @@
 package com.example.demo.usersDetails;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +25,7 @@ public class UserDetailsController {
 	}
 
 	@GetMapping("/all")
+//	@PreAuthorize("hasAuthority('ROLE_Admin')")O
 	Iterable<UserDetails> getAllUserDetails() {
 		return service.getAllUserDetails();
 	}
