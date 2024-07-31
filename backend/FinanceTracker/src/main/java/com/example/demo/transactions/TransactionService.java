@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.example.demo.account.Account;
+
 @Service
 public class TransactionService  {
 	
@@ -23,6 +25,10 @@ public class TransactionService  {
 	
 	List<Transaction> getAllTransactions() {
 		return repository.findAll();
+	}
+	
+	List<Transaction> getTransactionsByAccountId(String accountId) {
+		return repository.findByAccountAccountId(accountId);
 	}
 
 }

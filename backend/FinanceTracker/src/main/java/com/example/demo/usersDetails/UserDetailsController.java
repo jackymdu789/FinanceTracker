@@ -25,7 +25,6 @@ public class UserDetailsController {
 	}
 
 	@GetMapping("/all")
-//	@PreAuthorize("hasAuthority('ROLE_Admin')")O
 	Iterable<UserDetails> getAllUserDetails() {
 		return service.getAllUserDetails();
 	}

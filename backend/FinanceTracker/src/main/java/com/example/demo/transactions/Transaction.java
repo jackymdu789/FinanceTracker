@@ -24,6 +24,7 @@ public class Transaction {
 	String tranType;
 	LocalDateTime createdAt;
 	@ManyToOne
+	@JoinColumn(name = "account_id")
 	private Account account;
 
 	@PrePersist
