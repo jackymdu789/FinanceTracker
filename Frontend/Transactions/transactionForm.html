@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Transaction Form</h1>
+        <form id="transaction-form" method="post" action="">
+            <div class="mb-3 d-none" >
+                <label for="transaction-id" class="form-label">Transaction ID:</label>
+                <input type="text" id="transaction-id" name="transactionId" class="form-control" readonly>
+            </div>
+            <div class="mb-3">
+                <label for="transaction-type" class="form-label">Transaction Type:</label>
+                <select id="transaction-type" name="transactionType" class="form-select" required>
+                    <option value="" disabled selected>Select Type</option>
+                    <option value="credit">Credit</option>
+                    <option value="debit">Debit</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount:</label>
+                <input type="number" id="amount" name="amount" class="form-control" step="0.01" min="0" required>
+            </div>
+            <div class="mb-3">
+                <label for="date" class="form-label">Date:</label>
+                <input type="datetime-local" id="date" name="date" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="account-id" class="form-label">Account Number:</label>
+                <input type="text" id="account-id" name="accountId" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Submit</button>
+        </form>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="scripts.js"></script>
+</body>
+</html>
