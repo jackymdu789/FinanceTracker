@@ -73,18 +73,57 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+document.addEventListener('DOMContentLoaded', function () {
+  const tagSelect = document.getElementById('tag');
+  const typeSelect = document.getElementById('transaction-type');
+  
+  const tags = {
+      income: ['Salary', 'Investment', 'Gift'],
+      expense: ['Groceries', 'Rent', 'Utilities', 'Entertainment']
+  };
+
+  function populateTags(type) {
+      tagSelect.innerHTML = ''; // Clear existing options
+      const options = tags[type] || [];
+      options.forEach(tag => {
+          const option = document.createElement('option');
+          option.value = tag.toLowerCase();
+          option.textContent = tag;
+          tagSelect.appendChild(option);
+      });
+  }
+
+  typeSelect.addEventListener('change', function () {
+      populateTags(this.value);
+  });
+  populateTags(typeSelect.value);
+});
+
 const fetchAllTransaction = async () => {
   const url = "http://127.0.0.1:7000/api/v1/transactions/all";
   const data = await fetch(url).then((it) => it.json());
   return data;
 };
 
+function filterTransactions(type) {
+  const rows = document.querySelectorAll('#transactionBody tr');
+  rows.forEach(row => {
+      if (type === 'all') {
+          row.style.display = '';
+      } else if (row.classList.contains(type)) {
+          row.style.display = '';
+      } else {
+          row.style.display = 'none';
+      }
+  });
+}
+
 const createTableRow = (transaction) => {
   const rowColor =
     transaction.tranType.toUpperCase() === "EXPENSE" ? "#FF4C4C" : "#399918";
   const readableCreatedAt = new Date(transaction.createdAt).toLocaleString();
   return `
-        <tr style="background: ${rowColor}">
+        <tr style="background: ${rowColor}" class=${transaction.tranType.toLowerCase()}>
             <td>${readableCreatedAt}</td>
             <td>${transaction.tag}</td>
             <td>${transaction.amount}</td>

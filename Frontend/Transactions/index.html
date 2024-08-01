@@ -66,6 +66,13 @@
         <!-- Transactions Section -->
         <section id="transactions" class="mb-5">
             <h2>Transactions</h2>
+            <div class="sidebar" style="display: flex; justify-content: end;">
+                <div class="btn-group" role="group" aria-label="Transaction Filters">
+                    <button type="button" class="btn btn-outline-primary" onclick="filterTransactions('all')">Display All</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterTransactions('expense')">Display Expenses</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="filterTransactions('income')">Display Income</button>
+                </div>
+            </div>
             <table class="table table-striped">
                 <thead>
                     <tr>

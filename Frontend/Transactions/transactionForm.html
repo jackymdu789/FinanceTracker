@@ -17,7 +17,7 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center mb-4">Transaction Form</h1>
+        <h1 class="text-center mb-4">Transaction</h1>
         <form id="transaction-form">
             <div class="mb-3 d-none" >
                 <label for="transaction-id" class="form-label">Transaction ID:</label>
@@ -41,7 +41,8 @@
             </div>
             <div class="mb-3">
                 <label for="tag" class="form-label">Tag</label>
-                <input type="text" id="tag" name="tag" class="form-control" required>
+                <select id="tag" name="tag" class="form-select" required>
+                </select>
             </div>
             <button type="submit" class="btn btn-primary w-100">Submit</button>
         </form>
