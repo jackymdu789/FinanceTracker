@@ -2,6 +2,7 @@ package com.example.demo.userrole;
 
 import com.example.demo.usersDetails.UserDetails;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,6 +21,7 @@ public class UserInfo {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	String id;
+	@Column(nullable = false, unique = true)
 	String username;
 	String password;
 	String email;
