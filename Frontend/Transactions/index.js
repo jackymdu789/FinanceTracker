@@ -35,31 +35,43 @@
 //     }
 //   });
 // });
-// "tag": "rent",
-//   "amount": 50.00,
-//   "tranType": "expense"
-const handleTransactionForm = async () => {
 
-  alert("handleTransactionFrom")
-  const tranType = document.getElementById("transaction-type").value;
-  const amount = parseFloat(document.getElementById("amount").value);
-  const tag = document.getElementById("tag").value;
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('transaction-form');
+  
+  form.addEventListener('submit', async (event) => {
+      event.preventDefault(); 
+      
+      const tranType = document.getElementById("transaction-type").value;
+      const amount = parseFloat(document.getElementById("amount").value);
+      const tag = document.getElementById("tag").value;
 
-  const data = {tranType, tag, amount}
-  alert(data)
-  const accountId = "ce975592-b00f-4302-b577-04d1d2d33fdd"; // need to change in future
-  const url = `http://127.0.0.1:7000/api/v1/transactions/transaction/${accountId}`
-  await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body:JSON.stringify(data)
-  }).then(it => { if(it.ok){
-    console.log("working fine")
-  }})
+      const data = { tranType, tag, amount };
+      const accountId = "ce975592-b00f-4302-b577-04d1d2d33fdd"; // need to change in future
+      const url = `http://127.0.0.1:7000/api/v1/transactions/transaction/${accountId}`;
 
-};
+      try {
+          const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+          });
+
+          if (response.ok) {
+              await handleTransactionRow(); 
+              setTimeout(() => {
+                  window.location.href = "index.html";
+              }, 100); 
+          } else {
+              console.error('Transaction failed:', response.statusText);
+          }
+      } catch (error) {
+          console.error('Error during transaction:', error);
+      }
+  });
+});
 
 const fetchAllTransaction = async () => {
   const url = "http://127.0.0.1:7000/api/v1/transactions/all";
@@ -70,9 +82,10 @@ const fetchAllTransaction = async () => {
 const createTableRow = (transaction) => {
   const rowColor =
     transaction.tranType.toUpperCase() === "EXPENSE" ? "#FF4C4C" : "#399918";
+  const readableCreatedAt = new Date(transaction.createdAt).toLocaleString();
   return `
         <tr style="background: ${rowColor}">
-            <td>${transaction.createdAt}</td>
+            <td>${readableCreatedAt}</td>
             <td>${transaction.tag}</td>
             <td>${transaction.amount}</td>
             <td>${transaction.tranType}</td>
