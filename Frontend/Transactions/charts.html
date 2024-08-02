@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Pie Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        canvas {
+            max-width: 600px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <button id="generateChartBtn">Generate Pie Chart</button>
+        <canvas id="pieChart"></canvas>
+    </div>
+
+    <script>
+        document.getElementById('generateChartBtn').addEventListener('click', function () {
+            const ctx = document.getElementById('pieChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Food', 'Transport', 'Entertainment', 'Utilities', 'Others'],
+                    datasets: [{
+                        label: 'Expense Categories',
+                        data: [500, 200, 150, 300, 100], // Example data; replace with actual data
+                        backgroundColor: [
+                            '#ff6384',
+                            '#36a2eb',
+                            '#cc65fe',
+                            '#ffce56',
+                            '#ff9f40'
+                        ],
+                        borderColor: '#fff',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function (tooltipItem) {
+                                    const dataset = tooltipItem.dataset;
+                                    const dataIndex = tooltipItem.dataIndex;
+                                    const value = dataset.data[dataIndex];
+                                    const total = dataset.data.reduce((acc, val) => acc + val, 0);
+                                    const percentage = ((value / total) * 100).toFixed(2);
+
+                                    return `${dataset.label || ''} ${tooltipItem.label}: ${percentage}% ($${value})`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
