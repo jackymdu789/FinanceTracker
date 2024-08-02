@@ -43,7 +43,7 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf().disable().cors().and()
 				.authorizeHttpRequests(authorizeRequests -> 
-							authorizeRequests.requestMatchers("/api/v1/userinfo/**")
+							authorizeRequests.requestMatchers("/api/v1/userinfo/**", "/api/v1/userdetails/**")
 						.permitAll().requestMatchers("/api/v1/userdetails/all").hasRole("ADMIN")
 						.requestMatchers("/**").hasAnyRole("USER", "ADMIN"))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

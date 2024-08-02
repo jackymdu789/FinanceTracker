@@ -1,40 +1,7 @@
-// document.addEventListener("DOMContentLoaded", function () {
-//   // Generate a unique transaction ID
-//   function generateTransactionId() {
-//     return "TX" + Math.random().toString(36).substr(2, 9).toUpperCase();
-//   }
-
-// // Set the initial transaction ID
-// document.getElementById("transaction-id").value = generateTransactionId();
-
-// // Handle form submission
-// document
-//   .getElementById("transaction-form")
-//   .addEventListener("submit", function (event) {
-//     event.preventDefault();
-
-//     // Collect form data
-//     const transactionId = document.getElementById("transaction-id").value;
-//     const transactionType = document.getElementById("transaction-type").value;
-//     const amount = parseFloat(document.getElementById("amount").value);
-//     const date = document.getElementById("date").value;
-//     const accountId = document.getElementById("account-id").value;
-
-//     // Validate and process data (e.g., send to server or display in console)
-//     if (transactionType && amount >= 0 && date && accountId) {
-//       console.log({
-//         transactionId,
-//         transactionType,
-//         amount,
-//         date,
-//         accountId,
-//       });
-//       // Here you can add code to submit the data to a server or handle it as needed
-//     } else {
-//       alert("Please fill out all required fields.");
-//     }
-//   });
-// });
+import { fetchWithAuth } from "./api.js";
+document.addEventListener("DOMContentLoaded", () => {
+  // Check if the redirection has already occurred
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("transaction-form");
@@ -51,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const url = `http://127.0.0.1:7000/api/v1/transactions/transaction/${accountId}`;
 
     try {
-      const response = await fetch(url, {
+      const response = await fetchWithAuth(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -101,28 +68,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const fetchAllTransaction = async () => {
   const url = "http://127.0.0.1:7000/api/v1/transactions/all";
-  const data = await fetch(url, {
+  const data = await fetchWithAuth(url, {
     headers: {
-      "Authorization":
-        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFkZWVwIiwiaWF0IjoxNzIyNTMzNDIzLCJleHAiOjE3MjI1MzUyMjN9.9T2qGJhzXFtZWHKVhIDlEtxYjCYezDuRj-q7bGTimWE",
-        "Content-Type": "application/json",
+      "Content-Type": "application/json",
     },
   }).then((it) => it.json());
+  console.log(data);
   return data;
 };
-
-function filterTransactions(type) {
-  const rows = document.querySelectorAll("#transactionBody tr");
-  rows.forEach((row) => {
-    if (type === "all") {
-      row.style.display = "";
-    } else if (row.classList.contains(type)) {
-      row.style.display = "";
-    } else {
-      row.style.display = "none";
-    }
-  });
-}
 
 const createTableRow = (transaction) => {
   const rowColor =
@@ -145,7 +98,8 @@ const handleTransactionRow = () => {
         return createTableRow(v);
       })
       .join(" ");
-    document.getElementById("transactionBody").innerHTML = rows;
+    if (document.getElementById("transactionBody"))
+      document.getElementById("transactionBody").innerHTML = rows;
   });
 };
 
