@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.account.Account;
+
 @RestController
 @RequestMapping("/userGoals")
 @CrossOrigin(origins = "*")
@@ -32,8 +34,11 @@ public class UserGoalsController {
 		return service.getUserGoals(goalsId);
 	}
 	
-    @PostMapping("/")
-    public void addNewUserGoals(@RequestBody UserGoals userGoals) {
+    @PostMapping("/{accountId}")
+    public void addNewUserGoals(@RequestBody UserGoals userGoals, @PathVariable String accountId) {
+    
+    	Account account =new Account(accountId);
+    	userGoals.setUserAccount(account);
         service.addNewUserGoals(userGoals);
     }
     
