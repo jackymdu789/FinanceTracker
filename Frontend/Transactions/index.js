@@ -36,85 +36,91 @@
 //   });
 // });
 
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('transaction-form');
-  
-  form.addEventListener('submit', async (event) => {
-      event.preventDefault(); 
-      
-      const tranType = document.getElementById("transaction-type").value;
-      const amount = parseFloat(document.getElementById("amount").value);
-      const tag = document.getElementById("tag").value;
+document.addEventListener("DOMContentLoaded", () => {
+  const form = document.getElementById("transaction-form");
 
-      const data = { tranType, tag, amount };
-      const accountId = "ce975592-b00f-4302-b577-04d1d2d33fdd"; // need to change in future
-      const url = `http://127.0.0.1:7000/api/v1/transactions/transaction/${accountId}`;
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-      try {
-          const response = await fetch(url, {
-              method: "POST",
-              headers: {
-                  "Content-Type": "application/json",
-              },
-              body: JSON.stringify(data),
-          });
+    const tranType = document.getElementById("transaction-type").value;
+    const amount = parseFloat(document.getElementById("amount").value);
+    const tag = document.getElementById("tag").value;
 
-          if (response.ok) {
-              await handleTransactionRow(); 
-              setTimeout(() => {
-                  window.location.href = "index.html";
-              }, 100); 
-          } else {
-              console.error('Transaction failed:', response.statusText);
-          }
-      } catch (error) {
-          console.error('Error during transaction:', error);
+    const data = { tranType, tag, amount };
+    const accountId = "ce975592-b00f-4302-b577-04d1d2d33fdd"; // need to change in future
+    const url = `http://127.0.0.1:7000/api/v1/transactions/transaction/${accountId}`;
+
+    try {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        await handleTransactionRow();
+        setTimeout(() => {
+          window.location.href = "index.html";
+        }, 100);
+      } else {
+        console.error("Transaction failed:", response.statusText);
       }
+    } catch (error) {
+      console.error("Error during transaction:", error);
+    }
   });
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-  const tagSelect = document.getElementById('tag');
-  const typeSelect = document.getElementById('transaction-type');
-  
+document.addEventListener("DOMContentLoaded", function () {
+  const tagSelect = document.getElementById("tag");
+  const typeSelect = document.getElementById("transaction-type");
+
   const tags = {
-      income: ['Salary', 'Investment', 'Gift'],
-      expense: ['Groceries', 'Rent', 'Utilities', 'Entertainment']
+    income: ["Salary", "Investment", "Gift"],
+    expense: ["Groceries", "Rent", "Utilities", "Entertainment"],
   };
 
   function populateTags(type) {
-      tagSelect.innerHTML = ''; // Clear existing options
-      const options = tags[type] || [];
-      options.forEach(tag => {
-          const option = document.createElement('option');
-          option.value = tag.toLowerCase();
-          option.textContent = tag;
-          tagSelect.appendChild(option);
-      });
+    tagSelect.innerHTML = ""; // Clear existing options
+    const options = tags[type] || [];
+    options.forEach((tag) => {
+      const option = document.createElement("option");
+      option.value = tag.toLowerCase();
+      option.textContent = tag;
+      tagSelect.appendChild(option);
+    });
   }
 
-  typeSelect.addEventListener('change', function () {
-      populateTags(this.value);
+  typeSelect.addEventListener("change", function () {
+    populateTags(this.value);
   });
   populateTags(typeSelect.value);
 });
 
 const fetchAllTransaction = async () => {
   const url = "http://127.0.0.1:7000/api/v1/transactions/all";
-  const data = await fetch(url).then((it) => it.json());
+  const data = await fetch(url, {
+    headers: {
+      "Authorization":
+        "Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJwcmFkZWVwIiwiaWF0IjoxNzIyNTMzNDIzLCJleHAiOjE3MjI1MzUyMjN9.9T2qGJhzXFtZWHKVhIDlEtxYjCYezDuRj-q7bGTimWE",
+        "Content-Type": "application/json",
+    },
+  }).then((it) => it.json());
   return data;
 };
 
 function filterTransactions(type) {
-  const rows = document.querySelectorAll('#transactionBody tr');
-  rows.forEach(row => {
-      if (type === 'all') {
-          row.style.display = '';
-      } else if (row.classList.contains(type)) {
-          row.style.display = '';
-      } else {
-          row.style.display = 'none';
-      }
+  const rows = document.querySelectorAll("#transactionBody tr");
+  rows.forEach((row) => {
+    if (type === "all") {
+      row.style.display = "";
+    } else if (row.classList.contains(type)) {
+      row.style.display = "";
+    } else {
+      row.style.display = "none";
+    }
   });
 }
 

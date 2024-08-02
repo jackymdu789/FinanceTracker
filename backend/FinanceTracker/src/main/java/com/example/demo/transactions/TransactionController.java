@@ -42,5 +42,10 @@ public class TransactionController {
 		return service.getTransactionById(tranId);
 
 	}
+	
+	@GetMapping("account/{accountId}")
+	List<Transaction> getTransactionsByAccountId(@PathVariable String accountId) {
+		return service.getTransactionsByAccountId(accountId);
+	}
 
 }

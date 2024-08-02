@@ -3,15 +3,13 @@ package com.example.demo.transactions;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
+import com.example.demo.account.Account;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
-
-	@Query(nativeQuery = true, value = "select * from transaction where account_id = :paccountId ")
-	List<Transaction> custFindByAccountId(@Param("paccountId") String accountId); // error 
 	
+	List<Transaction> findByAccountAccountId(String accountId);
 	
 }
