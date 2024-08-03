@@ -89,7 +89,9 @@
     <p id="loginMessage"></p>
     <p>Don't have an account? <a href="signup.html">Sign up</a></p>
 </div>
-<script>
+<script type="module">
+    import {loadConfig} from './api.js'
+
     document.getElementById('loginForm').addEventListener(
         'submit',async function(event){
     event.preventDefault();
@@ -97,7 +99,7 @@
     var password = document.getElementById('password').value;
     var messageElement =document.getElementById('loginMessage');
 
-    await fetch('http://localhost:7000/api/v1/userinfo/authenticate',{
+    await fetch(await loadConfig() + '/api/v1/userinfo/authenticate',{
         method: 'POST',
         headers:{
             'Content-Type':'application/json'

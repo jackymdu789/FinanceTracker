@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const data = { tranType, tag, amount };
     const accountId = "ce975592-b00f-4302-b577-04d1d2d33fdd"; // need to change in future
-    const url = `http://127.0.0.1:7000/api/v1/transactions/transaction/${accountId}`;
+    const url = `/api/v1/transactions/transaction/${accountId}`;
 
     try {
       const response = await fetchWithAuth(url, {
@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const fetchAllTransaction = async () => {
-  const url = "http://127.0.0.1:7000/api/v1/transactions/all";
+  const url = "/api/v1/transactions/all";
   const data = await fetchWithAuth(url, {
     headers: {
       "Content-Type": "application/json",
@@ -100,6 +100,8 @@ const handleTransactionRow = () => {
       .join(" ");
     if (document.getElementById("transactionBody"))
       document.getElementById("transactionBody").innerHTML = rows;
+      document.getElementById("bodyOfTransactionTable").style.display = "block"
+      document.getElementById("loading-spinner").style.display = "none !important"
   });
 };
 

@@ -110,8 +110,6 @@
       <h2>Register Form</h2>
       <form
         id="userForm"
-        method="post"
-        action="http://127.0.0.1:7000/api/v1/userdetails/"
       >
         <div class="form-group">
           <label for="name">Name:</label>
@@ -168,7 +166,8 @@
       </form>
     </div>
 
-    <script>
+    <script type="module">
+      import {loadConfig} from './api.js'
       var finalUserData;
       const form1 = document.getElementById("userForm");
       const form2 = document.getElementById("userForm2");
@@ -189,7 +188,7 @@
 
           console.log(userDetails);
 
-          fetch("http://127.0.0.1:7000/api/v1/userdetails/", {
+          fetch(await loadConfig() + "/api/v1/userdetails/", {
             method: "post",
             headers: {
               "content-type": "application/json",
@@ -221,7 +220,7 @@
             });
         });
 
-      form2.addEventListener("submit", (e) => {
+      form2.addEventListener("submit", async(e) => {
         e.preventDefault();
         let formData = new FormData(e.target);
         let userDetails = {};
@@ -233,7 +232,7 @@
 
         console.log(userDetails, finalUserData);
 
-        fetch(`http://127.0.0.1:7000/api/v1/userinfo/add/${finalUserData.userId}`, {
+        fetch( await loadConfig() + `/api/v1/userinfo/add/${finalUserData.userId}`, {
           method: "post",
           headers: {
             "content-type": "application/json",
