@@ -1,6 +1,7 @@
 package com.example.demo.account;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -36,6 +39,10 @@ public class AccountController {
 	Iterable<Account> getAllAccountDetails() {
 		return services.getAllAccountDetails();
 	}
-	
+
+	@GetMapping("/{accountId}")
+	public Optional<Account> getAllAccountDetailsById(@PathVariable String accountId) {
+		return services.getAllAccountDetailsById(accountId);
+	}
 
 }

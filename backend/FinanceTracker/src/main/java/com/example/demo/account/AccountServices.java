@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Service
 public class AccountServices {
@@ -21,6 +22,10 @@ public class AccountServices {
 
 	public Optional<Account> getAccountByUserId(String userId){
 		return respo.findByUserDetailsUserId(userId);
+	}
+
+	public Optional<Account> getAllAccountDetailsById(@PathVariable String accountId) {
+		return respo.findById(accountId);
 	}
 	
 }
