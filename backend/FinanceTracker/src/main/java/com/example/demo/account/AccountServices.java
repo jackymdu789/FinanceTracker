@@ -1,5 +1,7 @@
 package com.example.demo.account;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,12 +11,16 @@ public class AccountServices {
 	@Autowired
 	AccountRepository respo;
 	
-	Iterable<Account> getAllAccountDetails() {
+	public Iterable<Account> getAllAccountDetails() {
 		return respo.findAll();
 	}
 	
-	void addNewAccount(Account account) {
+	public void addNewAccount(Account account) {
 		respo.save(account);
+	}
+
+	public Optional<Account> getAccountByUserId(String userId){
+		return respo.findByUserDetailsUserId(userId);
 	}
 	
 }

@@ -1,5 +1,7 @@
 package com.example.demo.account;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,7 +26,7 @@ public class AccountController {
 		return "Welcome to Finance Tracker";
 	}
 
-	@PostMapping("/{userId}")
+	@PostMapping("/add/{userId}")
 	public void postMethodName(@RequestBody Account account, @PathVariable String userId) {
 		account.setUserDetails(userId);
 		services.addNewAccount(account);

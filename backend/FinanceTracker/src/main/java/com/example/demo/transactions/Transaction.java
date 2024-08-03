@@ -26,6 +26,7 @@ public class Transaction {
 	@ManyToOne
 	@JoinColumn(name = "account_id")
 	private Account account;
+	String imageUrl;
 
 	@PrePersist
 	protected void onCreate() {
@@ -33,6 +34,15 @@ public class Transaction {
 			createdAt = LocalDateTime.now();
 		}
 	}
+
+	public String getImageUrl() {
+		return imageUrl;
+	}
+
+	public void setImageUrl(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
 
 	public String getTranId() {
 		return tranId;
@@ -83,7 +93,7 @@ public class Transaction {
 	}
 
 	public Transaction(String tranId, String tag, BigDecimal amount, String tranType, LocalDateTime createdAt,
-			String accountId) {
+			String accountId, String imageUrl) {
 		super();
 		this.tranId = tranId;
 		this.tag = tag;
@@ -91,6 +101,7 @@ public class Transaction {
 		this.tranType = tranType;
 		this.createdAt = createdAt;
 		this.account = new Account(accountId);
+		this.imageUrl = imageUrl;
 	}
 
 	public Transaction() {

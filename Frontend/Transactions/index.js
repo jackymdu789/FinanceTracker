@@ -1,4 +1,8 @@
-import { fetchWithAuth } from "./api.js";
+import { fetchWithAuth, parseJwtAccountId } from "./api.js";
+import { storage } from './firebase.js'; 
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js";
+
+
 document.addEventListener("DOMContentLoaded", () => {
   // Check if the redirection has already occurred
 });
@@ -12,9 +16,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const tranType = document.getElementById("transaction-type").value;
     const amount = parseFloat(document.getElementById("amount").value);
     const tag = document.getElementById("tag").value;
+    const file = document.getElementById('file').files[0];
+    var data = { tranType, tag, amount }
+    if(file){
+      const storageRef = ref(storage, 'files/' + file.name);
+      await uploadBytes(storageRef, file);
 
-    const data = { tranType, tag, amount };
-    const accountId = "ce975592-b00f-4302-b577-04d1d2d33fdd"; // need to change in future
+      const fileUrl = await getDownloadURL(storageRef);
+      data = {...data, "imageUrl": fileUrl}
+      // console.log('File uploaded at:', fileUrl);
+    }
+
+    
+    const accountId = parseJwtAccountId()
     const url = `/api/v1/transactions/transaction/${accountId}`;
 
     try {
@@ -67,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 const fetchAllTransaction = async () => {
-  const url = "/api/v1/transactions/all";
+  const url = `/api/v1/transactions/account/${parseJwtAccountId()}`;
   const data = await fetchWithAuth(url, {
     headers: {
       "Content-Type": "application/json",
@@ -79,14 +93,19 @@ const fetchAllTransaction = async () => {
 
 const createTableRow = (transaction) => {
   const rowColor =
-    transaction.tranType.toUpperCase() === "EXPENSE" ? "#FF4C4C" : "#399918";
+    transaction.tranType.toUpperCase() === "EXPENSE" ? "#E74C3C" : "#2ECC71";
   const readableCreatedAt = new Date(transaction.createdAt).toLocaleString();
+  const imageUrl = transaction.imageUrl
+  const finalColm = imageUrl
+    ? `<td><img src="${imageUrl}" alt="Thumbnail" style="width: 50px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="openImageModal('${imageUrl}')" /></td>`
+    : "<td> </td>";
   return `
         <tr style="background: ${rowColor}" class=${transaction.tranType.toLowerCase()}>
             <td>${readableCreatedAt}</td>
             <td>${transaction.tag}</td>
             <td>${transaction.amount}</td>
             <td>${transaction.tranType}</td>
+            ${finalColm}
         </tr>
     `;
 };
@@ -100,8 +119,9 @@ const handleTransactionRow = () => {
       .join(" ");
     if (document.getElementById("transactionBody"))
       document.getElementById("transactionBody").innerHTML = rows;
+      document.getElementById("loading-logo").style.display = "none"
       document.getElementById("bodyOfTransactionTable").style.display = "block"
-      document.getElementById("loading-spinner").style.display = "none !important"
+      
   });
 };
 

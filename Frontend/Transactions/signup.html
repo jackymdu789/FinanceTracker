@@ -166,6 +166,56 @@
       </form>
     </div>
 
+    <script>
+      function updateAge() {
+        const dob = document.getElementById("dob").value;
+        const ageElement = document.getElementById("age");
+
+        if (dob) {
+          const age = calculateAge(dob);
+          ageElement.value = age;
+        } else {
+          ageElement.value = "";
+        }
+      }
+
+      function calculateAge(dob) {
+        const today = new Date();
+        const birthDate = new Date(dob);
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const monthDiff = today.getMonth() - birthDate.getMonth();
+
+        if (
+          monthDiff < 0 ||
+          (monthDiff === 0 && today.getDate() < birthDate.getDate())
+        ) {
+          age--;
+        }
+        return age;
+      }
+
+      function showAlert(message, alertClass) {
+        const alertBox = document.createElement("div");
+        alertBox.className = `alert ${alertClass}`;
+        alertBox.role = "alert";
+        alertBox.id = "alertBox";
+        alertBox.innerHTML = `
+            ${message} 
+            <span class="close" onClick="closeAlert()">&times;</span>
+            `;
+
+        document.body.appendChild(alertBox);
+        setTimeout(() => {
+          closeAlert();
+        }, 5000);
+      }
+      function closeAlert() {
+        if (alertBox) {
+          alertBox.remove();
+        }
+      }
+    </script>
+
     <script type="module">
       import {loadConfig} from './api.js'
       var finalUserData;
@@ -222,6 +272,7 @@
 
       form2.addEventListener("submit", async(e) => {
         e.preventDefault();
+        const baseUrl = await loadConfig();
         let formData = new FormData(e.target);
         let userDetails = {};
         for (let [key, value] of formData.entries()) {
@@ -230,9 +281,7 @@
 
         userDetails = {...userDetails, "username": finalUserData.userName}
 
-        console.log(userDetails, finalUserData);
-
-        fetch( await loadConfig() + `/api/v1/userinfo/add/${finalUserData.userId}`, {
+        fetch( baseUrl + `/api/v1/userinfo/add/${finalUserData.userId}`, {
           method: "post",
           headers: {
             "content-type": "application/json",
@@ -242,58 +291,27 @@
             if(!it.ok){
                 showAlert("Error will create new role for user", "alert-danger")
             }else{
-                window.location.href = "login.html"
+                const data = {
+                  "balance": finalUserData.salary,
+                  "savingAmount": 0,
+                  "goalScore": 0
+                }
+                fetch(baseUrl + `/api/v1/account/add/${finalUserData.userId}`, {
+                  method: "post",
+                  headers: {
+                    "content-type": "application/json",
+                  },
+                  body: JSON.stringify(data),
+                }).then(that => {
+                  if(!that.ok){
+                    showAlert("Error while setuping account", "alert-danger")
+                  }else{
+                        window.location.href = "login.html"
+                  }
+                })
             }
         })
       });
-
-      function calculateAge(dob) {
-        const today = new Date();
-        const birthDate = new Date(dob);
-        let age = today.getFullYear() - birthDate.getFullYear();
-        const monthDiff = today.getMonth() - birthDate.getMonth();
-
-        if (
-          monthDiff < 0 ||
-          (monthDiff === 0 && today.getDate() < birthDate.getDate())
-        ) {
-          age--;
-        }
-        return age;
-      }
-
-      function updateAge() {
-        const dob = document.getElementById("dob").value;
-        const ageElement = document.getElementById("age");
-
-        if (dob) {
-          const age = calculateAge(dob);
-          ageElement.value = age;
-        } else {
-          ageElement.value = "";
-        }
-      }
-
-      function showAlert(message, alertClass) {
-        const alertBox = document.createElement("div");
-        alertBox.className = `alert ${alertClass}`;
-        alertBox.role = "alert";
-        alertBox.id = "alertBox";
-        alertBox.innerHTML = `
-            ${message} 
-            <span class="close" onClick="closeAlert()">&times;</span>
-            `;
-
-        document.body.appendChild(alertBox);
-        setTimeout(() => {
-          closeAlert();
-        }, 5000);
-      }
-      function closeAlert() {
-        if (alertBox) {
-          alertBox.remove();
-        }
-      }
     </script>
   </body>
 </html>

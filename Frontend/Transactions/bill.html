@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bill Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            max-width: 600px;
+            margin-top: 50px;
+        }
+        .overdue {
+            color: red;
+        }
+        .due-tomorrow {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <div id="nav"></div>
+    <div id="notification" class="alert alert-danger" style="display: none;"></div>
+    <div id="due-tomorrow-notification" class="alert alert-warning" style="display: none;"></div>
+    <div class="container">
+        <h1 class="text-center mb-4">Manage Bills</h1>
+        
+        <form id="bill-form">
+            <div class="mb-3">
+                <label for="bill-name" class="form-label">Bill Name:</label>
+                <input type="text" id="bill-name" name="name" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label for="amount" class="form-label">Amount:</label>
+                <input type="number" id="amount" name="amount" class="form-control" step="0.01" min="0" required>
+            </div>
+            <div class="mb-3">
+                <label for="due-date" class="form-label">Due Date:</label>
+                <input type="date" id="due-date" name="dueDate" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Bill</button>
+        </form>
+
+        <hr>
+        
+        <h2 class="mt-4">Bills</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="bill-table-body">
+                <!-- Rows will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { fetchWithAuth, parseJwtAccountId } from "./api.js";
+
+        const billForm = document.getElementById('bill-form');
+        const billTableBody = document.getElementById('bill-table-body');
+        const accountId = await parseJwtAccountId();
+        const notification = document.getElementById('notification');
+        const dueTomorrowNotification = document.getElementById('due-tomorrow-notification');
+        var count = 0;
+        let dueTomorrowCount = 0;
+
+        billForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(billForm);
+            const data = {
+                name: formData.get('name'),
+                amount: parseFloat(formData.get('amount')),
+                dueDate: formData.get('dueDate')
+            };
+
+            await fetchWithAuth(`/api/v1/bills/${accountId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            loadBills(); 
+        });
+
+        async function loadBills() {
+            const response = await fetchWithAuth(`/api/v1/bills/${accountId}`,{
+                method: "GET",
+                headers: {
+                "Content-Type": "application/json",
+                },
+            });
+            const bills = await response.json();
+            console.log(bills);
+            // const isOverdue = !bill.paid && dueDate < currentDate;
+            const currentDate = new Date();
+            const tomorrowDate = new Date();
+            tomorrowDate.setDate(currentDate.getDate() + 1);
+            billTableBody.innerHTML = bills.map(bill =>{
+                const isOverdue = !bill.paid && new Date(bill.dueDate) < currentDate;
+                const isDueTomorrow = !bill.paid && 
+                                      new Date(bill.dueDate).getFullYear() === tomorrowDate.getFullYear() &&
+                                      new Date(bill.dueDate).getMonth() === tomorrowDate.getMonth() &&
+                                      new Date(bill.dueDate).getDate() === tomorrowDate.getDate();
+                if(isOverdue){
+                    count++;
+                }
+                if(isDueTomorrow){
+                    dueTomorrowCount++;
+                }
+                return  `
+                <tr class="${isDueTomorrow ? 'due-tomorrow': isOverdue ? 'overdue' :''}">
+                    <td>${bill.name}</td>
+                    <td>${bill.amount}</td>
+                    <td>${new Date(bill.dueDate).toLocaleDateString()}</td>
+                    <td>${bill.paid ? 'Paid' : 'Unpaid'}</td>
+                    <td>
+                        ${!bill.paid ? `<button onclick="window.markAsPaid(${bill.id})" class="btn btn-success btn-sm">Mark as Paid</button>` : ''}
+                    </td>
+                </tr>
+            `
+            }).join('');
+
+            if (count > 0) {
+                notification.textContent = `You have ${count} overdue bill(s).`;
+                notification.style.display = 'block';
+                setTimeout(()=>{
+                    notification.style.display = 'none';
+                }, 3000)
+            } else {
+                notification.style.display = 'none';
+            }
+
+            setTimeout(() =>{
+                if (dueTomorrowCount > 0) {
+                dueTomorrowNotification.textContent = `You have ${dueTomorrowCount} bill(s) due tomorrow.`;
+                dueTomorrowNotification.style.display = 'block';
+            } else {
+                dueTomorrowNotification.style.display = 'none';
+            }}, 3000)
+        }
+
+        window.markAsPaid = async function markAsPaid(id) {
+            await fetchWithAuth(`/api/v1/bills/${id}/mark-as-paid`, {
+                method: 'PUT',
+            });
+
+            loadBills();
+        }
+
+        loadBills();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+    <script src="nav.js"></script>
+</body>
+</html>

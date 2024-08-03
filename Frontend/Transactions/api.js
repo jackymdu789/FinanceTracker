@@ -13,3 +13,15 @@ export const fetchWithAuth = async (url, payload) => {
   };
   return fetch(await loadConfig() + url, { ...payload, headers });
 };
+
+
+export function parseJwtAccountId() {
+  const token = sessionStorage.getItem('authToken');
+    try {
+        const decoded = jwt_decode(token);
+        return decoded.accountId;
+    } catch (e) {
+        console.error("Invalid token:", e);
+        return null;
+    }
+}

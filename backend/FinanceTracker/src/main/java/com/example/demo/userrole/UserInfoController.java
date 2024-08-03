@@ -1,5 +1,7 @@
 package com.example.demo.userrole;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.account.AccountServices;
 import com.example.demo.auth.AuthRequest;
 import com.example.demo.config.JwtService;
 
@@ -25,6 +28,9 @@ public class UserInfoController {
 
 	@Autowired
 	UserInfoServices service;
+
+	@Autowired
+	AccountServices accountService;
 
 	@Autowired
 	JwtService jwtservice;
@@ -49,7 +55,14 @@ public class UserInfoController {
 				.authenticate(new UsernamePasswordAuthenticationToken(
 						authrequest.getUsername(), authrequest.getPassword()));
 		if(authentication.isAuthenticated()) {
-			return jwtservice.generateToken(authrequest.getUsername());
+			Optional<UserInfo> userInfo = service.getByUserName(authrequest.getUsername());
+			if(userInfo.isPresent()){
+				String userId = userInfo.get().getUserDetails().getUserId();
+				String accountId = accountService.getAccountByUserId(userId).get().getAccountId();
+				return jwtservice.generateToken(authrequest.getUsername(), accountId);
+			}else{
+				throw new UsernameNotFoundException("user not found!");
+			}
 		} else {
 			throw new UsernameNotFoundException("invalid user request !");
 		}
