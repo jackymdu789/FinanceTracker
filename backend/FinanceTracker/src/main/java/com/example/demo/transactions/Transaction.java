@@ -103,6 +103,19 @@ public class Transaction {
 		this.account = new Account(accountId);
 		this.imageUrl = imageUrl;
 	}
+	
+	public Transaction(String tag, BigDecimal amount, String tranType,
+			String accountId, String imageUrl) {
+		this.tag = tag;
+		this.amount = amount;
+		this.tranType = tranType;
+		this.account = new Account(accountId);
+		this.imageUrl = imageUrl;
+	}
+	
+	public Transaction(String tranId){
+		this(tranId, null, null, null, null, null, null);
+	}
 
 	public Transaction() {
 	}

@@ -46,8 +46,14 @@
             </div>
             <div class="mb-3">
                 <label for="file" class="form-label">Attach File:</label>
-                <input type="file" id="file" name="file" class="form-control" required>
+                <input type="file" id="file" name="file" class="form-control">
             </div>
+            <div class="mb-3 form-check">
+                <input type="checkbox" id="recurring" name="recurring" class="form-check-input">
+                <label for="recurring" class="form-check-label" style="font-size: small;">
+                    Check this box if the transaction is recurring. If selected, this transaction will be automatically processed as recurring.
+                </label>
+            </div>            
             <button type="submit" class="btn btn-primary w-100">Submit</button>
         </form>
     </div>

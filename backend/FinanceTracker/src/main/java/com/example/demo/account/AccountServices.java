@@ -1,5 +1,6 @@
 package com.example.demo.account;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,14 @@ public class AccountServices {
 		return respo.findByUserDetailsUserId(userId);
 	}
 
-	public Optional<Account> getAllAccountDetailsById(@PathVariable String accountId) {
+	public Optional<Account> getAllAccountDetailsById(String accountId) {
 		return respo.findById(accountId);
+	}
+	
+	public void updateBalanceByAccountId(String accountId, BigDecimal amt) {
+		Account account = respo.findById(accountId).get();
+		account.setBalance(account.getBalance().add(amt));
+		respo.save(account);
 	}
 	
 }

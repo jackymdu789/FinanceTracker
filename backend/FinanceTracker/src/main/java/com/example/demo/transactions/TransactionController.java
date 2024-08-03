@@ -27,9 +27,9 @@ public class TransactionController {
 	
 
 	@PostMapping("/transaction/{accountId}")
-	void createTransaction(@RequestBody Transaction transaction, @PathVariable String accountId) {
+	Transaction createTransaction(@RequestBody Transaction transaction, @PathVariable String accountId) {
 		transaction.setAccount(accountId);
-		service.saveTransaction(transaction);
+		return service.saveTransaction(transaction);
 	}
 	
 	@GetMapping("/all")

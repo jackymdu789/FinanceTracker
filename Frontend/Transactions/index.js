@@ -1,10 +1,56 @@
 import { fetchWithAuth, parseJwtAccountId } from "./api.js";
-import { storage } from './firebase.js'; 
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js";
+import { storage } from "./firebase.js";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "https://www.gstatic.com/firebasejs/9.0.0/firebase-storage.js";
 
+const currentAmt = document.getElementById("current-balance");
+const tranSum = document.getElementById("tran-sum");
+fetchWithAuth(`/api/v1/account/${await parseJwtAccountId()}`, {
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+}).then(async (it) => {
+  if (it.ok) {
+    currentAmt.innerHTML = `Rs. ${await it.json().then((a) => a.balance)}`;
+  }
+});
 
-document.addEventListener("DOMContentLoaded", () => {
-  // Check if the redirection has already occurred
+const fetchAllTransaction = async () => {
+  const url = `/api/v1/transactions/account/${parseJwtAccountId()}`;
+  const data = await fetchWithAuth(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((it) => it.json());
+  return data;
+};
+
+function groupTransactions(transactions) {
+  return transactions.reduce((acc, transaction) => {
+    const type = transaction.tranType;
+    if (!acc[type]) {
+      acc[type] = { count: 0, totalAmount: 0 };
+    }
+    acc[type].count += 1;
+    acc[type].totalAmount += transaction.amount;
+    return acc;
+  }, {});
+}
+
+fetchAllTransaction().then((it) => {
+  let result = groupTransactions(it);
+  tranSum.innerHTML = `INCOME (<span style="color:#2ECC71">${
+    result.income?.count || 0
+  }</span>): Rs. ${result.income?.totalAmount || 0}
+  <br/>
+  EXPENSE (<span style="color:#E74C3C">${
+    result.expense?.count || 0
+  }</span>): Rs. ${result.expense?.totalAmount || 0}
+  `;
 });
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -16,19 +62,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const tranType = document.getElementById("transaction-type").value;
     const amount = parseFloat(document.getElementById("amount").value);
     const tag = document.getElementById("tag").value;
-    const file = document.getElementById('file').files[0];
-    var data = { tranType, tag, amount }
-    if(file){
-      const storageRef = ref(storage, 'files/' + file.name);
+    const file = document.getElementById("file").files[0];
+    const recurring = document.getElementById("recurring").checked;
+    var data = { tranType, tag, amount };
+    if (file) {
+      const storageRef = ref(storage, "files/" + file.name);
       await uploadBytes(storageRef, file);
 
       const fileUrl = await getDownloadURL(storageRef);
-      data = {...data, "imageUrl": fileUrl}
+      data = { ...data, imageUrl: fileUrl };
       // console.log('File uploaded at:', fileUrl);
     }
 
-    
-    const accountId = parseJwtAccountId()
+    const accountId = parseJwtAccountId();
     const url = `/api/v1/transactions/transaction/${accountId}`;
 
     try {
@@ -41,6 +87,20 @@ document.addEventListener("DOMContentLoaded", () => {
       });
 
       if (response.ok) {
+        if (recurring) {
+          const transaction = await response.json();
+          console.log(transaction);
+          await fetchWithAuth(`/api/v1/crons/add/${transaction.tranId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              date: new Date().getDate() < 29 ? new Date().getDate() : 28,
+            }),
+          });
+        }
+
         await handleTransactionRow();
         setTimeout(() => {
           window.location.href = "index.html";
@@ -80,22 +140,11 @@ document.addEventListener("DOMContentLoaded", function () {
   populateTags(typeSelect.value);
 });
 
-const fetchAllTransaction = async () => {
-  const url = `/api/v1/transactions/account/${parseJwtAccountId()}`;
-  const data = await fetchWithAuth(url, {
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((it) => it.json());
-  console.log(data);
-  return data;
-};
-
 const createTableRow = (transaction) => {
   const rowColor =
     transaction.tranType.toUpperCase() === "EXPENSE" ? "#E74C3C" : "#2ECC71";
   const readableCreatedAt = new Date(transaction.createdAt).toLocaleString();
-  const imageUrl = transaction.imageUrl
+  const imageUrl = transaction.imageUrl;
   const finalColm = imageUrl
     ? `<td><img src="${imageUrl}" alt="Thumbnail" style="width: 50px; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#imageModal" onclick="openImageModal('${imageUrl}')" /></td>`
     : "<td> </td>";
@@ -113,15 +162,18 @@ const createTableRow = (transaction) => {
 const handleTransactionRow = () => {
   fetchAllTransaction().then((it) => {
     const rows = it
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() < new Date(b.createdAt).getTime()
+      )
       .map((v, i) => {
         return createTableRow(v);
       })
       .join(" ");
     if (document.getElementById("transactionBody"))
       document.getElementById("transactionBody").innerHTML = rows;
-      document.getElementById("loading-logo").style.display = "none"
-      document.getElementById("bodyOfTransactionTable").style.display = "block"
-      
+    document.getElementById("loading-logo").style.display = "none";
+    document.getElementById("bodyOfTransactionTable").style.display = "block";
   });
 };
 

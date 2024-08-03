@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface AccountRepository extends CrudRepository<Account, String> {
 
     Optional<Account> findByUserDetailsUserId(String userId);
-
+ 
 }
