@@ -42,13 +42,18 @@
         right: 15px;
         cursor: pointer;
       }
+      canvas{
+        height: 300px !important;
+        width: 300px !important;
+        margin: auto;
+      }
   </style>
   <body>
     <!-- Navbar -->
     <div id="nav"></div>
 
     <!-- Main Content -->
-    <div class="container mt-4">
+    <div class="container" style="margin: 0px; margin-top: 20px; padding: 0px 40px;">
       <!-- Dashboard Section -->
       <section id="dashboard" class="mb-5">
         <h2>Dashboard</h2>
@@ -88,38 +93,30 @@
         </div>
         </div>
         <div class="row" style="padding: 0px 40px;">
-          <div class="col-md-6">
-            <div class="card mb-4">
-              <img
-                src="https://via.placeholder.com/600x300?text=AI+Generated+Image"
-                class="card-img-top"
-                alt="Dashboard Overview"
-              />
-              <div class="card-body">
-                <h5 class="card-title">Overview</h5>
-                <p class="card-text">
-                  Get a summary of your financial status with key metrics and
-                  trends.
-                </p>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h5 class="card-title">Income Overview</h5>
+                  <p class="card-text">
+                    This chart provides a visual summary of your income categories.
+                  </p>
+                  <canvas id="transactionsChart-income" width="300" height="300"></canvas>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="col-md-6">
-            <div class="card mb-4">
-              <img
-                src="https://via.placeholder.com/600x300?text=AI+Generated+Chart"
-                class="card-img-top"
-                alt="Financial Chart"
-              />
-              <div class="card-body">
-                <h5 class="card-title">Financial Chart</h5>
-                <p class="card-text">
-                  Visualize your income, expenses, and savings with interactive
-                  charts.
-                </p>
+            <div class="col-md-6">
+              <div class="card mb-4">
+                <div class="card-body">
+                  <h5 class="card-title">Expense Overview</h5>
+                  <p class="card-text">
+                    This chart visualizes the distribution of your expenses across different categories.
+                  </p>
+                  <canvas id="transactionsChart-expense" width="300" height="300"></canvas>
+                </div>
               </div>
             </div>
-          </div>
+          </div>          
         </div>
       </section>
 
@@ -326,5 +323,6 @@
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="nav.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </body>
 </html>

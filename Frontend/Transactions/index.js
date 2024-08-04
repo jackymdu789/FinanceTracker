@@ -208,3 +208,62 @@ document.getElementById("budgetForm").addEventListener("submit", async(event)=>{
     console.log(error);
   })
 })
+
+const transactionChartData = async(tranType) =>{
+  const data = await fetchAllTransaction()
+  const groupedData = data.filter(it => it.tranType == tranType).reduce((acc, transaction) => {
+    const { tag, amount } = transaction;
+    if (!acc[tag.toUpperCase()]) {
+      acc[tag.toUpperCase()] = 0;
+    }
+    acc[tag.toUpperCase()] += amount;
+    return acc;
+  }, {});
+  return groupedData
+}
+
+const prepareChartData = (groupedData) => {
+  const labels = Object.keys(groupedData);
+  const values = Object.values(groupedData);
+
+  return {
+    labels: labels,
+    datasets: [{
+      data: values,
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
+      hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+    }]
+  };
+};
+
+const renderChart = async (tranType) => {
+  const data  = await transactionChartData(tranType)
+  const chartData = prepareChartData(data);
+
+  const ctx = document.getElementById(`transactionsChart-${tranType}`).getContext('2d');
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: chartData,
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: 'top',
+        },
+        tooltip: {
+          callbacks: {
+            label: function (tooltipItem) {
+              const label = tooltipItem.label || '';
+              const value = tooltipItem.raw || 0;
+              return `${label}: $${value.toFixed(2)}`;
+            }
+          }
+        }
+      }
+    }
+  });
+};
+
+renderChart("income");
+renderChart("expense");
+
