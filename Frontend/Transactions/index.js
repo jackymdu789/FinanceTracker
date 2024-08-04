@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const tag = document.getElementById("tag").value;
     const file = document.getElementById("file").files[0];
     const recurring = document.getElementById("recurring").checked;
-    const createdAt = document.getElementById("date").value
+    const createdAt = document.getElementById("date").value;
     var data = { tranType, tag, amount };
     if (file) {
       const storageRef = ref(storage, "files/" + file.name);
@@ -180,48 +180,54 @@ const handleTransactionRow = () => {
 
 handleTransactionRow();
 
+document
+  .getElementById("budgetForm")
+  .addEventListener("submit", async (event) => {
+    event.preventDefault();
 
-document.getElementById("budgetForm").addEventListener("submit", async(event)=>{
-  event.preventDefault();
+    const category = document.getElementById("category").value;
+    const amount = document.getElementById("amount").value;
+    const frequency = document.getElementById("frequency").value;
+    const data = {
+      budgetCategory: category,
+      budgetAmt: amount,
+      frequency: frequency,
+    };
 
-  const category = document.getElementById("category").value
-  const amount = document.getElementById("amount").value
-  const frequency = document.getElementById("frequency").value
-  const data = {
-    budgetCategory:category,
-    budgetAmt:amount,
-    frequency:frequency,
-  };
+    fetchWithAuth(`/api/v1/budget/${parseJwtAccountId()}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then(async(it) => {
+        if (it.ok) {
+          showAlert("Budget set successfully.", "alert-primary");
+          document.getElementById("budgetForm").reset();
+          await generateExpenseChart();
+        }
+      })
+      .catch((error) => {
+        showAlert("Hmmm!! Something went wrong.", "alert-danger");
+        console.log(error);
+      });
+  });
 
-  fetchWithAuth(`/api/v1/budget/${parseJwtAccountId()}`,{
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data)
-  }).then(it =>{
-    if(it.ok){
-      showAlert("Budget set successfully.", "alert-primary");
-      document.getElementById("budgetForm").reset();
-    }
-  }).catch(error =>{
-    showAlert("Hmmm!! Something went wrong.", "alert-danger");
-    console.log(error);
-  })
-})
-
-const transactionChartData = async(tranType) =>{
-  const data = await fetchAllTransaction()
-  const groupedData = data.filter(it => it.tranType == tranType).reduce((acc, transaction) => {
-    const { tag, amount } = transaction;
-    if (!acc[tag.toUpperCase()]) {
-      acc[tag.toUpperCase()] = 0;
-    }
-    acc[tag.toUpperCase()] += amount;
-    return acc;
-  }, {});
-  return groupedData
-}
+const transactionChartData = async (tranType) => {
+  const data = await fetchAllTransaction();
+  const groupedData = data
+    .filter((it) => it.tranType == tranType)
+    .reduce((acc, transaction) => {
+      const { tag, amount } = transaction;
+      if (!acc[tag.toUpperCase()]) {
+        acc[tag.toUpperCase()] = 0;
+      }
+      acc[tag.toUpperCase()] += amount;
+      return acc;
+    }, {});
+  return groupedData;
+};
 
 const prepareChartData = (groupedData) => {
   const labels = Object.keys(groupedData);
@@ -229,70 +235,120 @@ const prepareChartData = (groupedData) => {
 
   return {
     labels: labels,
-    datasets: [{
-      data: values,
-      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0'],
-      hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
-    }]
+    datasets: [
+      {
+        data: values,
+        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+        hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"],
+      },
+    ],
   };
 };
 
 const renderChart = async (tranType) => {
-  const data  = await transactionChartData(tranType)
+  const data = await transactionChartData(tranType);
   const chartData = prepareChartData(data);
 
-  const ctx = document.getElementById(`transactionsChart-${tranType}`).getContext('2d');
+  const ctx = document
+    .getElementById(`transactionsChart-${tranType}`)
+    .getContext("2d");
   new Chart(ctx, {
-    type: 'doughnut',
+    type: "doughnut",
     data: chartData,
     options: {
       responsive: true,
       plugins: {
         legend: {
-          position: 'top',
+          position: "top",
         },
         tooltip: {
           callbacks: {
             label: function (tooltipItem) {
-              const label = tooltipItem.label || '';
+              const label = tooltipItem.label || "";
               const value = tooltipItem.raw || 0;
-              return `${label}: $${value.toFixed(2)}`;
-            }
-          }
-        }
-      }
-    }
+              return `${label}: Rs.${value.toFixed(2)}`;
+            },
+          },
+        },
+      },
+    },
   });
 };
 
 renderChart("income");
 renderChart("expense");
 
-fetchWithAuth(`/api/v1/account/${parseJwtAccountId()}`,{
+fetchWithAuth(`/api/v1/account/${parseJwtAccountId()}`, {
   method: "get",
   headers: {
     "Content-Type": "application/json",
   },
-}).then(async(it) =>{
-  if(it.ok){
-    const goals = document.getElementById("goalsId")
-    const data = await it.json()
-    goals.innerHTML = data.goalScore ? data.goalScore : 0
-
+}).then(async (it) => {
+  if (it.ok) {
+    const goals = document.getElementById("goalsId");
+    const data = await it.json();
+    goals.innerHTML = data.goalScore ? data.goalScore : 0;
   }
-})
+});
 
+const fetchAllBudget = async () => {
+  const response = fetchWithAuth(`/api/v1/budget/${parseJwtAccountId()}`, {
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  return (await response).json();
+};
 
-fetchWithAuth(`/api/v1/budget/${parseJwtAccountId()}`,{
-  method: "get",
-  headers: {
-    "Content-Type": "application/json",
-  },
-}).then(async(it) =>{
-  if(it.ok){
-   console.log(await it.json())
-  }
-}).catch(error =>{
-  console.log(error);
-})
+const generateExpenseChart = async () => {
+  const expenseData = await fetchAllBudget();
+  const currentExpenseData = await fetchAllTransaction();
+  console.log(currentExpenseData)
+  const ctx = document.getElementById("expensesChart").getContext("2d");
 
+  const categories = ["Groceries", "Rent", "Utilities", "Entertainment"];
+
+  const budgetedAmounts = categories.map(category => {
+    const expense = expenseData.find(exp => exp.budgetCategory?.toLowerCase() === category?.toLowerCase());
+    return expense ? expense.budgetAmt : 0;
+  });
+
+  const actualExpenses = categories.map(category => {
+    const transactions = currentExpenseData.filter(it => it.tranType === "expense").filter(transaction => transaction?.tag?.toLowerCase() === category?.toLowerCase());
+    return transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+  });
+
+  new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: categories,
+      datasets: [
+        {
+          label: "Budgeted Amount",
+          data: budgetedAmounts,
+          backgroundColor: "#36A2EB",
+          borderColor: "#36A2EB",
+          borderWidth: 1,
+        },
+        {
+          label: "Actual Expenses",
+          data: actualExpenses,
+          backgroundColor: "#FF6384",
+          borderColor: "#FF6384",
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+        },
+      },
+    },
+  });
+};
+
+generateExpenseChart()

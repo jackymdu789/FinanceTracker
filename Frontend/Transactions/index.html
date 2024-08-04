@@ -166,7 +166,7 @@
                     <label for="frequency" class="form-label">Frequency</label>
                     <select class="form-select" id="frequency" required>
                       <option value="monthly">Monthly</option>
-                      <option value="weekly">Weekly</option>
+                      <!-- <option value="weekly">Weekly</option> -->
                     </select>
                   </div>
                   <button type="submit" class="btn btn-primary">Set Budget</button>
@@ -179,7 +179,7 @@
               <div class="card-body">
                 <h5 class="card-title">Budget vs. Spending</h5>
                 <div id="budget-chart">
-                  <img src="https://via.placeholder.com/600x300?text=Budget+Chart" class="img-fluid" alt="Budget Chart" />
+                  <canvas id="expensesChart" width="100" height="100"></canvas>
                 </div>
               </div>
             </div>
