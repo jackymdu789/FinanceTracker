@@ -282,3 +282,17 @@ fetchWithAuth(`/api/v1/account/${parseJwtAccountId()}`,{
   }
 })
 
+
+fetchWithAuth(`/api/v1/budget/${parseJwtAccountId()}`,{
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+}).then(async(it) =>{
+  if(it.ok){
+   console.log(await it.json())
+  }
+}).catch(error =>{
+  console.log(error);
+})
+

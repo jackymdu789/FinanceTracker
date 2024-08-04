@@ -1,6 +1,7 @@
 package com.example.demo.budget;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,14 @@ public class BudgetServices {
     }
 
     void insertNewBudget(Budget budget){
-        repo.save(budget);
+        Optional<Budget> existingBudget = repo.findByAccountAccountIdAndBudgetCategoryAndFrequency(budget.getAccount().getAccountId(), budget.getBudgetCategory(), budget.getFrequency());
+        if(existingBudget.isPresent()){
+            Budget updateBudget = existingBudget.get();
+            updateBudget.setBudgetAmt(budget.getBudgetAmt());
+            repo.save(updateBudget);
+        }else{
+            repo.save(budget);
+        }
     }
 
     void updateBudgetByBudgetId(String budgetId, Budget budget){
