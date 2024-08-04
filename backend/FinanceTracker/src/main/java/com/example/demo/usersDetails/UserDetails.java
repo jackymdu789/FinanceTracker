@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.example.demo.account.Account;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

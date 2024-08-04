@@ -57,8 +57,8 @@
       <!-- Dashboard Section -->
       <section id="dashboard" class="mb-5">
         <h2>Dashboard</h2>
-        <div class="row">
-          <div class="col-md-6" style="height: 188px;">
+        <div class="row" style="width: 94vw;">
+          <div class="col-md-4" style="height: 188px;">
             <div class="card mb-4">
               <div class="card-body text-center">
                 <h4 class="card-title" style="font-weight: bolder;">Current Balance</h4>
@@ -74,12 +74,28 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6" style="height: 188px;">
+          <div class="col-md-4" style="height: 188px;">
             <div class="card mb-4">
               <div class="card-body text-center">
                 <h4 class="card-title" style="font-weight: bolder;">Transaction Summary</h4>
                 <p class="card-text">
-                  <div id="tran-sum">
+                  <div id="tran-sum" style="height: 48px !important;">
+                    <div id="loading-spinner" class="d-flex justify-content-center align-items-center" style="height: 100px;">
+                      <div class="spinner-border" role="status">
+                        <!-- <span class="sr-only">Loading...</span> -->
+                      </div>
+                    </div>
+                  </div>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4" style="height: 188px;">
+            <div class="card mb-4">
+              <div class="card-body text-center">
+                <h4 class="card-title" style="font-weight: bolder;">Financial Goals Achieved </h4>
+                <p class="card-text">
+                  <div id="goalsId" style="height: 48px !important;">
                     <div id="loading-spinner" class="d-flex justify-content-center align-items-center" style="height: 100px;">
                       <div class="spinner-border" role="status">
                         <!-- <span class="sr-only">Loading...</span> -->
@@ -165,6 +181,54 @@
                 <div id="budget-chart">
                   <img src="https://via.placeholder.com/600x300?text=Budget+Chart" class="img-fluid" alt="Budget Chart" />
                 </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- debt management -->
+      <section id="debt-management" class="mb-5" style="padding: 0px 40px;">
+        <h2>Debt Management</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5 class="card-title">Add Debt Account</h5>
+                <form id="debtForm">
+                  <div class="mb-3">
+                    <label for="debt-type" class="form-label">Debt Type</label>
+                    <select class="form-select" id="debt-type" required>
+                      <option value="">Select a Debt Type</option>
+                      <option value="credit-card">Credit Card</option>
+                      <option value="loan">Loan</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="debt-name" class="form-label">Debt Name</label>
+                    <input type="text" class="form-control" id="debt-name" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="debt-amount" class="form-label">Amount</label>
+                    <input type="number" class="form-control" id="debt-amount" required />
+                  </div>
+                  <div class="mb-3">
+                    <label for="interest-rate" class="form-label">Interest Rate (%)</label>
+                    <input type="number" class="form-control" id="interest-rate" required />
+                  </div>
+                  <button type="submit" class="btn btn-primary">Add Debt</button>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="card mb-4">
+              <div class="card-body">
+                <h5 class="card-title">Debt Repayment Plan</h5>
+                <p class="card-text">
+                  Create and manage your debt repayment plans to track your progress.
+                </p>
+                <canvas id="debtProgressChart" width="300" height="300"></canvas>
               </div>
             </div>
           </div>

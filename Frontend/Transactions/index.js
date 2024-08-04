@@ -64,13 +64,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const tag = document.getElementById("tag").value;
     const file = document.getElementById("file").files[0];
     const recurring = document.getElementById("recurring").checked;
+    const createdAt = document.getElementById("date").value
     var data = { tranType, tag, amount };
     if (file) {
       const storageRef = ref(storage, "files/" + file.name);
       await uploadBytes(storageRef, file);
 
       const fileUrl = await getDownloadURL(storageRef);
-      data = { ...data, imageUrl: fileUrl };
+      data = { ...data, imageUrl: fileUrl, createdAt };
       // console.log('File uploaded at:', fileUrl);
     }
 
@@ -266,4 +267,18 @@ const renderChart = async (tranType) => {
 
 renderChart("income");
 renderChart("expense");
+
+fetchWithAuth(`/api/v1/account/${parseJwtAccountId()}`,{
+  method: "get",
+  headers: {
+    "Content-Type": "application/json",
+  },
+}).then(async(it) =>{
+  if(it.ok){
+    const goals = document.getElementById("goalsId")
+    const data = await it.json()
+    goals.innerHTML = data.goalScore ? data.goalScore : 0
+
+  }
+})
 
