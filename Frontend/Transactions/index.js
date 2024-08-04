@@ -178,3 +178,33 @@ const handleTransactionRow = () => {
 };
 
 handleTransactionRow();
+
+
+document.getElementById("budgetForm").addEventListener("submit", async(event)=>{
+  event.preventDefault();
+
+  const category = document.getElementById("category").value
+  const amount = document.getElementById("amount").value
+  const frequency = document.getElementById("frequency").value
+  const data = {
+    budgetCategory:category,
+    budgetAmt:amount,
+    frequency:frequency,
+  };
+
+  fetchWithAuth(`/api/v1/budget/${parseJwtAccountId()}`,{
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+  }).then(it =>{
+    if(it.ok){
+      showAlert("Budget set successfully.", "alert-primary");
+      document.getElementById("budgetForm").reset();
+    }
+  }).catch(error =>{
+    showAlert("Hmmm!! Something went wrong.", "alert-danger");
+    console.log(error);
+  })
+})
