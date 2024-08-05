@@ -201,9 +201,9 @@ document
       },
       body: JSON.stringify(data),
     })
-      .then(async(it) => {
+      .then(async (it) => {
         if (it.ok) {
-          await generateExpenseChart()
+          await generateExpenseChart();
           showAlert("Budget set successfully.", "alert-primary");
           document.getElementById("budgetForm").reset();
           // window.location.reload()
@@ -311,14 +311,24 @@ const generateExpenseChart = async () => {
 
   const categories = ["Groceries", "Rent", "Utilities", "Entertainment"];
 
-  const budgetedAmounts = categories.map(category => {
-    const expense = expenseData.find(exp => exp.budgetCategory?.toLowerCase() === category?.toLowerCase());
+  const budgetedAmounts = categories.map((category) => {
+    const expense = expenseData.find(
+      (exp) => exp.budgetCategory?.toLowerCase() === category?.toLowerCase()
+    );
     return expense ? expense.budgetAmt : 0;
   });
 
-  const actualExpenses = categories.map(category => {
-    const transactions = currentExpenseData.filter(it => it.tranType === "expense").filter(transaction => transaction?.tag?.toLowerCase() === category?.toLowerCase());
-    return transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
+  const actualExpenses = categories.map((category) => {
+    const transactions = currentExpenseData
+      .filter((it) => it.tranType === "expense")
+      .filter(
+        (transaction) =>
+          transaction?.tag?.toLowerCase() === category?.toLowerCase()
+      );
+    return transactions.reduce(
+      (sum, transaction) => sum + transaction.amount,
+      0
+    );
   });
 
   const chartData = {
@@ -358,6 +368,86 @@ const generateExpenseChart = async () => {
     },
   });
 };
+generateExpenseChart();
 
 
-generateExpenseChart()
+document.getElementById('debtForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
+   const response = await fetchWithAuth(`/api/v1/account/${parseJwtAccountId()}`, {
+      method: "get",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    
+  const account = await response.json()
+  const debtAmount = parseFloat(document.getElementById('debt-amount').value);
+  const annualInterestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
+  const monthlyInterestRate = annualInterestRate / 12;
+  const monthlySalary = parseFloat(account.userDetails.salary);
+  const repaymentPercentage = parseFloat(document.getElementById('repayment-percentage').value) / 100;
+  const monthlyPayment = monthlySalary * repaymentPercentage;
+
+  let remainingAmount = debtAmount;
+  let totalPaid = 0;
+  let months = 0;
+  const dataPoints = [];
+
+  while (remainingAmount > 0) {
+    // Monthly interest
+    const monthlyInterest = remainingAmount * monthlyInterestRate;
+    remainingAmount += monthlyInterest;
+
+    if (remainingAmount > monthlyPayment) {
+      remainingAmount -= monthlyPayment;
+      totalPaid += monthlyPayment;
+    } else {
+      totalPaid += remainingAmount;
+      remainingAmount = 0;
+    }
+
+    months++;
+    dataPoints.push({ x: months, y: totalPaid });
+  }
+  document.getElementById("debt-year").innerText = (months/12).toFixed(1)
+  document.getElementById("total-debt-amt").innerText = totalPaid.toFixed(3)
+
+  plotDebtProgress(dataPoints, months);
+  document.getElementById('debt-graph').style.display = "block"
+});
+
+function plotDebtProgress(dataPoints, totalMonths) {
+  const ctx = document.getElementById('debtProgressChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      datasets: [{
+        label: 'Total Amount Paid Over Time',
+        data: dataPoints,
+        fill: false,
+        borderColor: 'blue',
+        tension: 0.1
+      }]
+    },
+    options: {
+      scales: {
+        x: {
+          type: 'linear',
+          title: {
+            display: true,
+            text: 'Months'
+          },
+          ticks: {
+            stepSize: Math.max(1, Math.floor(totalMonths / 12)) // Adjust the step size for better readability
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Total Amount Paid (Principal + Interest)'
+          }
+        }
+      }
+    }
+  });
+}
