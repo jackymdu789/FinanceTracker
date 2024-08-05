@@ -370,84 +370,92 @@ const generateExpenseChart = async () => {
 };
 generateExpenseChart();
 
+document
+  .getElementById("debtForm")
+  .addEventListener("submit", async function (event) {
+    event.preventDefault();
+    const response = await fetchWithAuth(
+      `/api/v1/account/${parseJwtAccountId()}`,
+      {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-document.getElementById('debtForm').addEventListener('submit', async function(event) {
-  event.preventDefault();
-   const response = await fetchWithAuth(`/api/v1/account/${parseJwtAccountId()}`, {
-      method: "get",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-    
-  const account = await response.json()
-  const debtAmount = parseFloat(document.getElementById('debt-amount').value);
-  const annualInterestRate = parseFloat(document.getElementById('interest-rate').value) / 100;
-  const monthlyInterestRate = annualInterestRate / 12;
-  const monthlySalary = parseFloat(account.userDetails.salary);
-  const repaymentPercentage = parseFloat(document.getElementById('repayment-percentage').value) / 100;
-  const monthlyPayment = monthlySalary * repaymentPercentage;
+    const account = await response.json();
+    const debtAmount = parseFloat(document.getElementById("debt-amount").value);
+    const annualInterestRate =
+      parseFloat(document.getElementById("interest-rate").value) / 100;
+    const monthlyInterestRate = annualInterestRate / 12;
+    const monthlySalary = parseFloat(account.userDetails.salary);
+    const repaymentPercentage =
+      parseFloat(document.getElementById("repayment-percentage").value) / 100;
+    const monthlyPayment = monthlySalary * repaymentPercentage;
 
-  let remainingAmount = debtAmount;
-  let totalPaid = 0;
-  let months = 0;
-  const dataPoints = [];
+    let remainingAmount = debtAmount;
+    let totalPaid = 0;
+    let months = 0;
+    const dataPoints = [];
 
-  while (remainingAmount > 0) {
-    // Monthly interest
-    const monthlyInterest = remainingAmount * monthlyInterestRate;
-    remainingAmount += monthlyInterest;
+    while (remainingAmount > 0) {
+      // Monthly interest
+      const monthlyInterest = remainingAmount * monthlyInterestRate;
+      remainingAmount += monthlyInterest;
 
-    if (remainingAmount > monthlyPayment) {
-      remainingAmount -= monthlyPayment;
-      totalPaid += monthlyPayment;
-    } else {
-      totalPaid += remainingAmount;
-      remainingAmount = 0;
+      if (remainingAmount > monthlyPayment) {
+        remainingAmount -= monthlyPayment;
+        totalPaid += monthlyPayment;
+      } else {
+        totalPaid += remainingAmount;
+        remainingAmount = 0;
+      }
+
+      months++;
+      dataPoints.push({ x: months, y: totalPaid });
     }
+    document.getElementById("debt-year").innerText = (months / 12).toFixed(1);
+    document.getElementById("total-debt-amt").innerText = totalPaid.toFixed(3);
 
-    months++;
-    dataPoints.push({ x: months, y: totalPaid });
-  }
-  document.getElementById("debt-year").innerText = (months/12).toFixed(1)
-  document.getElementById("total-debt-amt").innerText = totalPaid.toFixed(3)
-
-  plotDebtProgress(dataPoints, months);
-  document.getElementById('debt-graph').style.display = "block"
-});
+    plotDebtProgress(dataPoints, months);
+    document.getElementById("debt-graph").style.display = "block";
+  });
 
 function plotDebtProgress(dataPoints, totalMonths) {
-  const ctx = document.getElementById('debtProgressChart').getContext('2d');
+  const ctx = document.getElementById("debtProgressChart").getContext("2d");
   new Chart(ctx, {
-    type: 'line',
+    type: "line",
     data: {
-      datasets: [{
-        label: 'Total Amount Paid Over Time',
-        data: dataPoints,
-        fill: false,
-        borderColor: 'blue',
-        tension: 0.1
-      }]
+      datasets: [
+        {
+          label: "Total Amount Paid Over Time",
+          data: dataPoints,
+          fill: false,
+          borderColor: "blue",
+          tension: 0.1,
+        },
+      ],
     },
     options: {
       scales: {
         x: {
-          type: 'linear',
+          type: "linear",
           title: {
             display: true,
-            text: 'Months'
+            text: "Months",
           },
           ticks: {
-            stepSize: Math.max(1, Math.floor(totalMonths / 12)) // Adjust the step size for better readability
-          }
+            stepSize: Math.max(1, Math.floor(totalMonths / 12)), // Adjust the step size for better readability
+          },
         },
         y: {
           title: {
             display: true,
-            text: 'Total Amount Paid (Principal + Interest)'
-          }
-        }
-      }
-    }
+            text: "Total Amount Paid (Principal + Interest)",
+          },
+        },
+      },
+    },
   });
 }

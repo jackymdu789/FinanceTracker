@@ -29,6 +29,9 @@ const navbarHTML = `
         <a class="nav-link" href="bill.html">Bill</a>
       </li>
       <li class="nav-item">
+        <a class="nav-link" href="financeNews.html">News</a>
+      </li>
+      <li class="nav-item">
         <a class="nav-link" onclick="handleClose()">Logout</a>
       </li>
     </ul>
