@@ -1,40 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Finance Tracker</title>
     <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
-  <!-- <link rel="stylesheet" href="styles.css" /> -->
-</head>
-<body style="">
-  <!-- Navbar -->
-  <div id="nav"></div>
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #f4f4f9;
+        font-family: "Roboto", sans-serif;
+      }
+      #profile {
+        background-color: #1f1f2e;
+        padding: 50px 0;
+        color: #f4f4f9;
+        text-align: center;
+      }
+      #profile img {
+        border: 4px solid #f4f4f9;
+        margin-bottom: 20px;
+        height: 200px;
+        width: 200px;
+        transition: transform 0.3s ease;
+      }
+      #profile img:hover {
+        transform: scale(1.1);
+      }
+      #profile h2 {
+        margin-bottom: 40px;
+        font-weight: bold;
+      }
+      #profile h3 {
+        margin-top: 20px;
+        font-size: 1.8em;
+        font-weight: 300;
+      }
+      #profile p {
+        margin: 10px 0;
+        font-size: 1.1em;
+      }
+      .btn-custom {
+        background-color: #f4f4f9;
+        color: #1f1f2e;
+        border: 2px solid #f4f4f9;
+        padding: 10px 20px;
+        font-size: 1.1em;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+      .btn-custom:hover {
+        background-color: #1f1f2e;
+        color: #f4f4f9;
+        border: 2px solid #f4f4f9;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <div id="nav"></div>
+
     <section id="profile">
-        <h2>Profile</h2>
-        <div class="row">
-        <div class="col-md-4"></div>
+      <h2>Profile</h2>
+      <div class="container">
+        <div class="row justify-content-center">
           <div class="col-md-4">
             <img
-              src="https://via.placeholder.com/300x300?text=AI+Generated+Profile"
+              src="https://api.dicebear.com/9.x/lorelei/svg?flip=false"
               class="img-fluid rounded-circle"
               alt="Profile Picture"
             />
-          </div>
-          <div class="col-md-4">
-            <h3>John Doe</h3>
-            <p>Email: john.doe@example.com</p>
-            <p>Member since: January 2023</p>
-            <a href="#" class="btn btn-primary">Edit Profile</a>
+            <h3 id="username">John Doe</h3>
+            <p>Unique ID: <span id="useremail">john.doe@example.com</span></p>
+            <p>Member since: <span id="year"> January 2023</span></p>
+            <!-- <a href="#" class="btn btn-custom">Edit Profile</a> -->
           </div>
         </div>
-      </section>
-      <script type="module" src="proctedRoute.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+      </div>
+    </section>
+
+    <script type="module" src="proctedRoute.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="nav.js"></script>
-</body>
+    <script type="module">
+      import { fetchWithAuth, parseJwtAccountId } from "./api.js";
+      fetchWithAuth(`/api/v1/account/${parseJwtAccountId()}`, {
+        method: "get",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then(async (res) => {
+        if (res.ok) {
+          const data = await res.json();
+          console.log(data);
+
+          document.getElementById("username").innerText =
+            data.userDetails.userName;
+          document.getElementById("useremail").innerText =
+            data.userDetails.userId;
+
+          const months = [
+            "January",
+            "February",
+            "March",
+            "April",
+            "May",
+            "June",
+            "July",
+            "August",
+            "September",
+            "October",
+            "November",
+            "December",
+          ];
+
+          const createdAt = data.createdAt
+          const year = new Date(createdAt).getFullYear()
+          const month = months[new Date(createdAt).getMonth()]
+          document.getElementById("year").innerText = `${month} ${year}`;
+
+
+        }
+      });
+    </script>
+  </body>
 </html>

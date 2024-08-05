@@ -1,4 +1,5 @@
 {
-    "baseUrl": "https://financetracker-6ljx.onrender.com",
-    "baseUrl1": "https://turbo-space-yodel-q4jqj76j4pgc6gp-7000.app.github.dev"
+    "baseUrlRender": "https://financetracker-6ljx.onrender.com",
+    "baseUrl1": "https://turbo-space-yodel-q4jqj76j4pgc6gp-7000.app.github.dev",
+    "baseUrl": "http://127.0.0.1:7000"
 }

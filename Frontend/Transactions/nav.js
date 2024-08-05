@@ -17,10 +17,10 @@ const navbarHTML = `
   <div class="collapse navbar-collapse" id="navbarNav" style="flex-direction: row-reverse;">
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
-        <a class="nav-link" href="index.html">Dashboard</a>
+        <a class="nav-link" href="index.html#dashboard">Dashboard</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="index.html">Transactions</a>
+        <a class="nav-link" href="index.html#transactions">Transactions</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" href="profile.html">Profile</a>
@@ -42,5 +42,10 @@ function addNavbar() {
     navElement.innerHTML = navbarHTML;
   }
 }
+
+const handleClose = () => {
+  sessionStorage.clear();
+  window.location.reload();
+};
 
 document.addEventListener('DOMContentLoaded', addNavbar);

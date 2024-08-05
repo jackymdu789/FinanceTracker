@@ -1,6 +1,7 @@
 package com.example.demo.account;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import com.example.demo.usersDetails.UserDetails;
 
@@ -9,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 
 @Entity
 public class Account {
@@ -21,7 +23,23 @@ public class Account {
 	BigDecimal balance;
 	BigDecimal savingAmount;
 	Integer goalScore;
+	LocalDateTime createdAt;
 	
+	@PrePersist
+	protected void onCreate() {
+		if (createdAt == null) {
+			createdAt = LocalDateTime.now();
+		}
+	}
+	
+	public LocalDateTime getCreatedAt() {
+		return createdAt;
+	}
+
+	public void setCreatedAt(LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
 	public Account() {
 	}
 	
@@ -56,17 +74,18 @@ public class Account {
 		this.goalScore = goalScore;
 	}
 	public Account(String accountId, String userId, BigDecimal balance, BigDecimal savingAmount,
-			Integer goalScore) {
+			Integer goalScore,LocalDateTime createdAt) {
 		super();
 		this.accountId = accountId;
 		this.userDetails = new UserDetails(userId);
 		this.balance = balance;
 		this.savingAmount = savingAmount;
 		this.goalScore = goalScore;
+		this.createdAt = createdAt;
 	}
 	
 	public Account(String accountId) {
-		this(accountId, null, null, null, null);
+		this(accountId, null, null, null, null, null);
 	}
 
 }

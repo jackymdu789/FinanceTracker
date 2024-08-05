@@ -139,10 +139,10 @@
       
 
       <!-- Budget Section -->
-      <section  class="mb-5" style="padding: 0px 40px; ">
+      <section  class="mb-5 mt-5 pt-4" style="padding: 0px 40px; ">
         <h2>Budget</h2>
-        <button class="btn btn-primary mb-4" id="toggleBudgetButton">Show Budget</button>
-        <div class="row" id="budget" style="display: none;">
+        <!-- <button class="btn btn-primary mb-4" id="toggleBudgetButton">Show Budget</button> -->
+        <div class="row mt-4" id="budget"> <!-- style="display: none;"> -->
           <div class="col-md-6">
             <div class="card mb-4">
               <div class="card-body">
@@ -300,24 +300,7 @@
             </tr>
           </thead>
           <tbody id="transactionBody">
-            <!-- <tr>
-                        <td>2024-07-30</td>
-                        <td>Salary</td>
-                        <td>$3,500.00</td>
-                        <td>Credit</td>
-                    </tr>
-                    <tr>
-                        <td>2024-07-28</td>
-                        <td>Groceries</td>
-                        <td>$150.00</td>
-                        <td>Debit</td>
-                    </tr>
-                    <tr>
-                        <td>2024-07-25</td>
-                        <td>Rent</td>
-                        <td>$1,200.00</td>
-                        <td>Debit</td>
-                    </tr> -->
+            <!--  -->
           </tbody>
         </table>
         <button class="m-2bt btn btn-secondary">
@@ -352,10 +335,6 @@
           alertBox.remove();
         }
       }
-      const handleClose = () => {
-        sessionStorage.clear();
-        window.location.reload();
-      };
       function filterTransactions(type) {
         const rows = document.querySelectorAll("#transactionBody tr");
         rows.forEach((row) => {
@@ -373,16 +352,16 @@
         modalImage.src = imageUrl;
       }
 
-      document.getElementById('toggleBudgetButton').addEventListener('click', function() {
-        const budgetSection = document.getElementById('budget');
-        if (budgetSection.style.display === 'none') {
-          budgetSection.style.display = 'flex';
-          this.textContent = 'Hide Budget'; // Change button text
-        } else {
-          budgetSection.style.display = 'none';
-          this.textContent = 'Show Budget'; // Change button text
-        }
-      });
+      // document.getElementById('toggleBudgetButton').addEventListener('click', function() {
+      //   const budgetSection = document.getElementById('budget');
+      //   if (budgetSection.style.display === 'none') {
+      //     budgetSection.style.display = 'flex';
+      //     this.textContent = 'Hide Budget'; // Change button text
+      //   } else {
+      //     budgetSection.style.display = 'none';
+      //     this.textContent = 'Show Budget'; // Change button text
+      //   }
+      // });
     </script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>

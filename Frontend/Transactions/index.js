@@ -203,9 +203,10 @@ document
     })
       .then(async(it) => {
         if (it.ok) {
+          await generateExpenseChart()
           showAlert("Budget set successfully.", "alert-primary");
           document.getElementById("budgetForm").reset();
-          await generateExpenseChart();
+          // window.location.reload()
         }
       })
       .catch((error) => {
@@ -301,10 +302,11 @@ const fetchAllBudget = async () => {
   return (await response).json();
 };
 
+let expenseChart = null;
+
 const generateExpenseChart = async () => {
   const expenseData = await fetchAllBudget();
   const currentExpenseData = await fetchAllTransaction();
-  console.log(currentExpenseData)
   const ctx = document.getElementById("expensesChart").getContext("2d");
 
   const categories = ["Groceries", "Rent", "Utilities", "Entertainment"];
@@ -319,27 +321,33 @@ const generateExpenseChart = async () => {
     return transactions.reduce((sum, transaction) => sum + transaction.amount, 0);
   });
 
-  new Chart(ctx, {
+  const chartData = {
+    labels: categories,
+    datasets: [
+      {
+        label: "Budgeted Amount",
+        data: budgetedAmounts,
+        backgroundColor: "#36A2EB",
+        borderColor: "#36A2EB",
+        borderWidth: 1,
+      },
+      {
+        label: "Actual Expenses",
+        data: actualExpenses,
+        backgroundColor: "#FF6384",
+        borderColor: "#FF6384",
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  if (expenseChart) {
+    expenseChart.destroy();
+  }
+
+  expenseChart = new Chart(ctx, {
     type: "bar",
-    data: {
-      labels: categories,
-      datasets: [
-        {
-          label: "Budgeted Amount",
-          data: budgetedAmounts,
-          backgroundColor: "#36A2EB",
-          borderColor: "#36A2EB",
-          borderWidth: 1,
-        },
-        {
-          label: "Actual Expenses",
-          data: actualExpenses,
-          backgroundColor: "#FF6384",
-          borderColor: "#FF6384",
-          borderWidth: 1,
-        },
-      ],
-    },
+    data: chartData,
     options: {
       responsive: true,
       scales: {
@@ -350,5 +358,6 @@ const generateExpenseChart = async () => {
     },
   });
 };
+
 
 generateExpenseChart()
